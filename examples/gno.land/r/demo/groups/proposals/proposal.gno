@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 	"gno.land/p/demo/acl"
+	"gno.land/r/demo/auth"
 )
 
 type ProposalID  uint64
@@ -24,13 +25,7 @@ type Proposal struct {
 
 func newProposal(url string, name string, creator std.Address) *Proposal {
 
-	dir := acl.New()
-	dir.AddUserPerm(creator, "read", "r/demo/groups/proposals:.*")
-
-	verb := "write"
-	resource := "r/demo/groups/proposals:.*"
-
-	check := dir.HasPerm(creator, verb, resource)
+	check := auth.CheckRealmAccess("r/demo/groups/proposals", "write", creator.String())
 	if !check {
 		panic("u dont have permissions")
 	}
